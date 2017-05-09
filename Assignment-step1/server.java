@@ -46,7 +46,7 @@
                     }  
                     //读取键盘上的输入流,写入客户端  
                     info = br.readLine()+"+1s";
-                    dos.writeUTF(info);  
+                    dos.writeUTF("苟利国家生死以"+info);  
                     //如果服务器自己说bye,也结束会话  
                     if(info.equals("bye")){  
                         break;  

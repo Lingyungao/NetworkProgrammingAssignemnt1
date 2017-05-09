@@ -28,7 +28,10 @@ public class clients {
             String info;  
             while(true){  
                 //客户端先读取键盘输入信息  
-                info = br.readLine();  
+                info = br.readLine();
+                if(info.equals(0) || info.equals(1)){
+                	
+
                 //写入到服务器  
                 dos.writeUTF(info);  
                 //如果客户端自己说bye,即结束对话  
@@ -37,10 +40,12 @@ public class clients {
                 }  
                 //接收服务器端信息  
                 info = dis.readUTF();  
-                System.out.println("服务器说: "+ info);  
+                System.out.println("服务器说: "+ info); } 
                 if(info.equals("bye")){  
                     break;  
-                }  
+                }
+                else
+                	break;
             }  
             dis.close();  
             dos.close();  
