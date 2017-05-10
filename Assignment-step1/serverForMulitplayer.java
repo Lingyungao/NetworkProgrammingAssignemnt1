@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
-public class server {
+public class serverForMulitplayer {
 	private static final int port = 8888;
 
 	public static void main(String[] args) throws Exception {

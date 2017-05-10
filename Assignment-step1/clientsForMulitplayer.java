@@ -2,19 +2,11 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-public class MultiThreadClients {
+public class clientsForMulitplayer {
       private final static String host = "localhost";
       private final static int port = 8888;
-      private ServerSocket serverSocket;
-      private ExecutorService executorService;//thread pool
-      private final int POOL_SIZE=10;//poolsize for each thread
-
-
 
       public static void main(String[] args) {
            try {
