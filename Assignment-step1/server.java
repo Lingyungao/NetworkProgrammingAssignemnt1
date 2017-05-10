@@ -1,10 +1,13 @@
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 
 public class server {
@@ -16,6 +19,11 @@ ServerSocket ss = new ServerSocket(port);
 // connect
 System.out.println("server start, waiting");
 Socket s = ss.accept();
+String NowTime = refFormatNowDate();
+String userIP = ss.getInetAddress().getHostAddress();
+String userName = ss.getInetAddress().getHostName();
+
+
 // output steam
 DataOutputStream dos = new DataOutputStream(s.getOutputStream());
 // input steam
@@ -60,9 +68,39 @@ dis.close();
 dos.close();
 s.close();
 ss.close();
+String clientLog = "user " + userName + " from ip: " + userIP + " at " + NowTime;
+System.out.println(clientLog);
+
 } catch (IOException e) {
 e.printStackTrace();
 System.out.println("sth error");
 		}
 	}
+
+/* set time format
+ * and get system
+ */
+public static String refFormatNowDate() {
+	  Date nowTime = new Date(System.currentTimeMillis());
+	  SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy-MM-dd");
+	  String retStrFormatNowDate = sdFormatter.format(nowTime);
+
+	  return retStrFormatNowDate;
+	}
+
+/*file check and create
+ * 
+ */
+public static boolean createFile(File fileName)throws Exception{  
+	  boolean flag=false;  
+	  try{
+	   if(!fileName.exists()){  
+	    fileName.createNewFile();  
+	    flag=true;  
+	   }  
+	  }catch(Exception e){  
+	   e.printStackTrace();  
+	  }  
+	  return true;  
+	 }   
 }
