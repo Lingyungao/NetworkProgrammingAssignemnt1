@@ -17,89 +17,98 @@ public class server {
 
 	public static void main(String[] args) throws Exception {
 		try {
-			ServerSocket ss = new ServerSocket(port);
+			ServerSocket serverSocket  = new ServerSocket(port);
 			// connect
 			System.out.println("server start, waiting");
-			Socket s = ss.accept();
+			Socket socket = serverSocket.accept();
 			String NowTime = refFormatNowDate();
-			String userIP = ss.getInetAddress().getHostAddress();
-			String userName = ss.getInetAddress().getHostName();
-			String clientInfo = "user " + userName + " from ip: " + userIP
-					+ " at " + NowTime;
+			String userIP;
+			String clientInfo;
 			String info;
 			int max = 2;
 			int min = 0;
 			int resultNumber;
 			int sumNumber;
+			int socketPort = socket.getPort();
 			String gameInfo;
 
-			// Connect log
+			// creat Connect log
 			File acceptLog = new File("acceptLog.txt");
 			createFile(acceptLog);
-			writeToFile(acceptLog, clientInfo);
 
-			// game history log
+			// creat game history log
 			File gamelog = new File("gamelog.txt");
 			createFile(gamelog);
 
 			// output steam
-			DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+			DataOutputStream socketOut = new DataOutputStream(socket.getOutputStream());
 			// input steam
-			DataInputStream dis = new DataInputStream(s.getInputStream());
+			DataInputStream socketIn = new DataInputStream(socket.getInputStream());
 			// read from keyboard
-			BufferedReader br = new BufferedReader(new InputStreamReader(
-					System.in));
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 			Random random = new Random();
 			int randomNumber = random.nextInt(max) % (max - min + 1) + min;
 
 			while (true) {
+				userIP = socketIn.readUTF();
+				clientInfo = userIP + " using " + socketPort + " at " + NowTime + " accept " ;
+				System.out.println(clientInfo);
+				writeToFile(acceptLog, clientInfo);
+
 				// get user input
-				resultNumber = dis.readInt();
+				resultNumber = socketIn.readInt();
 
 				// write to gamelog
-				gameInfo = userName + " send out " + resultNumber;
+				gameInfo = userIP + " send out " + resultNumber;
 				writeToFile(gamelog, gameInfo);
 
 				// read from keyboard and send to user
 				sumNumber = resultNumber + randomNumber;
+				
 				// write to gamelog
-				gameInfo = userName + " get sumNumber " + sumNumber;
+				gameInfo = userIP + " get sumNumber " + sumNumber;
 				writeToFile(gamelog, gameInfo);
 
 				System.out.println("server number is:" + resultNumber);
 				System.out.println("random Number is:" + randomNumber);
 				System.out.println("sum number is:" + sumNumber);
-				info = "server:please enter guess number";
 				break;
 			}
+			info = "server:sum number ready";
+			socketOut.writeUTF(info);
 			while (true) {
 				// get user input
-				resultNumber = dis.readInt();
-				// info = dis.readUTF();
+				resultNumber = socketIn.readInt();
 				System.out.println("server guess:" + resultNumber);
-				gameInfo = userName + " guess sumNumber " + resultNumber;
+				// upadte game info
+				gameInfo = userIP + " guess sumNumber " + resultNumber;
 				writeToFile(gamelog, gameInfo);
-                
-				//game compare
+
+				// game compare
 				if ((sumNumber - resultNumber) * (sumNumber - resultNumber) <= 1) {
 					info = "win";
-					gameInfo = userName + info;
+					gameInfo = userIP + info;
 					writeToFile(gamelog, gameInfo);
 
 				} else {
 					info = "fail";
-					gameInfo = userName + " " + info;
+					gameInfo = userIP + " " + info;
 					writeToFile(gamelog, gameInfo);
 				}
-				dos.writeUTF(info);
+				socketOut.writeUTF(info);
 				break;
 			}
-			dis.close();
-			dos.close();
-			s.close();
-			ss.close();
+			// all steam close
+			socketIn.close();
+			socketOut.close();
+			socket.close();
+			serverSocket.close();
+			// update accept log
+			NowTime = refFormatNowDate();
+			clientInfo = userIP + " at " + NowTime + " leave ";
 			System.out.println(clientInfo);
+			writeToFile(acceptLog, clientInfo);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -134,8 +143,7 @@ public class server {
 		return true;
 	}
 
-	public static void writeToFile(File filename, String log)
-			throws IOException {
+	public static void writeToFile(File filename, String log) throws IOException {
 		FileWriter fw = new FileWriter(filename.getName(), true);
 		BufferedWriter bw = new BufferedWriter(fw);
 		bw.write(log);
@@ -143,6 +151,6 @@ public class server {
 		bw.close();
 	}
 
-	// info = dis.readUTF();
+	// info = socketIn.readUTF();
 	// System.out.println("server:" + resultNumber);
 }

@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.Socket;
 
 public class clients {
@@ -10,34 +11,38 @@ public class clients {
 
       public static void main(String[] args) {
            try {
-                 Socket s = new Socket(host, port);
+                 Socket socket = new Socket(host, port);
                  System.out.println("clients start.");
+                 String info;
+
                  // output steam
-                 DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+                 DataOutputStream socketOut = new DataOutputStream(socket.getOutputStream());
                  // input steam
-                 DataInputStream dis = new DataInputStream(s.getInputStream());
+                 DataInputStream socketIn = new DataInputStream(socket.getInputStream());
                  // read from keyboard
                  BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-                 String info;
+                 
+                 //register to server
+     			 InetAddress userIP = InetAddress.getLocalHost();
+     			 info = userIP.toString();
+     			 System.out.println("User :" + userIP + "ready");
+     			 socketOut.writeUTF(info);
+     			 
                  int resultNumber;
                  while (true) {
                      System.out.println("Please enter a number between 0-2");                      
                      resultNumber = Integer.parseInt(br.readLine());
-                     //System.out.println("server number is:"+resultNumber);
                      while (2<resultNumber||resultNumber<0){
                             // read from keyboard
                             System.out.println("Wrong input,Please enter a number between 0-2");                      
-                            //info = br.readLine();
                             resultNumber = Integer.parseInt(br.readLine());
-                          //  System.out.println("server number is:"+resultNumber);
-                            // if user say bye,end
-                            // get server information
                       }
                       // send to server first time
-                      dos.writeInt(resultNumber);                      
-                     // System.out.println("send" + info + "out,plase say the guess number");
+                      socketOut.writeInt(resultNumber);                      
                  break;
                  }
+                 socketIn.readUTF();
+                 System.out.println(info);
                  while (true) {
                      System.out.println("Please guess sum,sum should between 0-4");                      
                      resultNumber = Integer.parseInt(br.readLine());
@@ -45,24 +50,22 @@ public class clients {
                      while (4<resultNumber||resultNumber<0){
                             // read from keyboard
                             System.out.println("Wrong input,Please enter a number between 0-4");                      
-                            //info = br.readLine();
                             resultNumber = Integer.parseInt(br.readLine());
-                         //   System.out.println("server number is:"+resultNumber);
-                            // if user say bye,end
-                            // get server information
                       }
-                      // send to server first time
-                      dos.writeInt(resultNumber);
-                      info = dis.readUTF();
+                      // send to server second time
+                      socketOut.writeInt(resultNumber);
+                      info = socketIn.readUTF();
                       System.out.println(info);
                       break;
                       }
-                 dis.close();
-                 dos.close();
-                 s.close();
+                 //steam close, accept close
+                 socketIn.close();
+                 socketOut.close();
+                 socket.close();
 
            } catch (Exception e) {
                  e.printStackTrace();
            }
       }
+      
 }
