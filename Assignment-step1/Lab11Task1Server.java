@@ -10,6 +10,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.text.SimpleDateFormat;
@@ -25,10 +27,13 @@ public class Lab11Task1Server {
 		try {
 
 			InetSocketAddress server = new InetSocketAddress(host,port);
+			Selector selector = Selector.open();
+
 			ServerSocketChannel serverSocketChannel = ServerSocketChannel
 					.open();
 			serverSocketChannel.socket().bind(server);
-
+			SelectionKey key = serverSocketChannel.register(selector, SelectionKey.OP_READ);
+			
 			System.out.println("server/"
 					+ server.getAddress());
 
