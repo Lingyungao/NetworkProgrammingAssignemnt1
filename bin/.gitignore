@@ -1,13 +1,17 @@
 /.cproject
 /.project
 /Assignment1/
+/Assignment1step1Class Diagram.ucls
+/Assignment1step2Class Diagram.ucls
+/lab6/
 /TestMulitClient$1.class
 /TestMulitClient.class
 /clients.class
 /clientsForMulitplayer$1.class
 /clientsForMulitplayer.class
 /game.class
-/lab6/
 /pickPlayer.class
 /server.class
 /serverForMulitplayer.class
+/lab11/
+/Lab11Task1Clients.class
