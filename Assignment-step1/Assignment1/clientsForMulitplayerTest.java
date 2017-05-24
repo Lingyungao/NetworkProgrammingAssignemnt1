@@ -1,4 +1,3 @@
-package Assignment1;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -12,7 +11,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class clientsForMulitplayer {
+public class clientsForMulitplayerTest {
 
 	public static void main(String[] args) throws IOException {
 		// int numTasks = 5;
@@ -86,8 +85,9 @@ public class clientsForMulitplayer {
 							System.out.println(info);
 						} while (!info.equals("PASS"));
 						break;
-
 					}
+					socketIn.readUTF();
+					System.out.println(info);
 					// steam close, accept close
 					socketIn.close();
 					socketOut.close();

@@ -5,11 +5,14 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 public class Lab11Task2Clients {
       private final static String host = "localhost";
       private final static int port = 8888;
+      private static final int BUFFER_SIZE = 256;
+
 
       public static void main(String[] args) {
            try {
@@ -17,9 +20,10 @@ public class Lab11Task2Clients {
         	   SocketChannel socketChannel = SocketChannel.open();
         	   socketChannel.connect(server);
 
+        	   
                  System.out.println("clients start.");
                  System.out.println("client/"+socketChannel.socket().getLocalAddress()+"/"+socketChannel.socket().getLocalPort());
-                 String read;
+                 ByteBuffer read;
                  String input;
 
                  // output steam
@@ -33,8 +37,12 @@ public class Lab11Task2Clients {
                      System.out.println("Start input");                      
                      input = br.readLine();
                       // send to server second time
-                      socketOut.writeUTF(input);
-                      read = socketIn.readUTF();
+                     ByteBuffer outbuffer = ByteBuffer.wrap(input.getBytes());
+                     outbuffer.flip();
+                     socketChannel.write(outbuffer);
+                      //socketOut.writeUTF(input);
+                     read = ByteBuffer.allocate(BUFFER_SIZE);
+                     
                       System.out.println(read);
                       }while(!read.equals("X"));
                  //steam close, accept close

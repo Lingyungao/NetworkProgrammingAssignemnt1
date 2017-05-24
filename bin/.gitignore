@@ -3,18 +3,23 @@
 /Assignment1/
 /Assignment1step1Class Diagram.ucls
 /Assignment1step2Class Diagram.ucls
-/lab6/
+/Lab11Task1Clients.class
+/Lab11Task1Server.class
+/Lab11Task2Clients.class
+/Lab11Task2Server.class
 /TestMulitClient$1.class
 /TestMulitClient.class
 /clients.class
 /clientsForMulitplayer$1.class
 /clientsForMulitplayer.class
 /game.class
+/lab11/
+/lab6/
 /pickPlayer.class
 /server.class
 /serverForMulitplayer.class
-/lab11/
-/Lab11Task1Clients.class
-/Lab11Task1Server.class
-/Lab11Task2Clients.class
-/Lab11Task2Server.class
+/CopyOfLab11Task2ServerTest.class
+/Lab11Task2ServerTest.class
+/CrunchifyNIOServer.class
+/Lab11Task2Test.class
+/Lab11Task2ClientsTest.class

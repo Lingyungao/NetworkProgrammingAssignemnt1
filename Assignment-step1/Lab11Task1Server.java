@@ -20,22 +20,23 @@ import java.util.Random;
 
 public class Lab11Task1Server {
 	private static final int port = 8888;
-    private final static String host = "localhost";
+	private final static String host = "localhost";
 
 	public static void main(String[] args) throws Exception {
 
 		try {
 
-			InetSocketAddress server = new InetSocketAddress(host,port);
-			Selector selector = Selector.open();
+			InetSocketAddress server = new InetSocketAddress(host, port);
+			//Selector selector = Selector.open();
 
 			ServerSocketChannel serverSocketChannel = ServerSocketChannel
 					.open();
+			//start non-block mode
 			serverSocketChannel.socket().bind(server);
-			SelectionKey key = serverSocketChannel.register(selector, SelectionKey.OP_READ);
-			
-			System.out.println("server/"
-					+ server.getAddress());
+			// SelectionKey key = serverSocketChannel.register(selector,
+			// SelectionKey.OP_READ);
+
+			System.out.println("server/" + server.getAddress());
 
 			// connect
 			System.out.println("server start, waiting");
@@ -44,31 +45,31 @@ public class Lab11Task1Server {
 			String ServerOutput;
 
 			while (true) {
-			    	SocketChannel socketChannel = serverSocketChannel.accept();
-					System.out.println("client/"
-							+ socketChannel.socket().getLocalAddress());
-					// output steam
-					DataOutputStream socketOut = new DataOutputStream(
-							socketChannel.socket().getOutputStream());
-					// input steam
-					DataInputStream socketIn = new DataInputStream(
-							socketChannel.socket().getInputStream());
-					// read from keyboard
-					BufferedReader br = new BufferedReader(
-							new InputStreamReader(System.in));
-					do{
+				SocketChannel socketChannel = serverSocketChannel.accept();
+				System.out.println("client/"
+						+ socketChannel.socket().getLocalAddress());
+				// output steam
+				DataOutputStream socketOut = new DataOutputStream(socketChannel
+						.socket().getOutputStream());
+				// input steam
+				DataInputStream socketIn = new DataInputStream(socketChannel
+						.socket().getInputStream());
+				// read from keyboard
+				BufferedReader br = new BufferedReader(new InputStreamReader(
+						System.in));
+				do {
 					ClientInput = socketIn.readUTF();
 					System.out.println(ClientInput);
 					ServerOutput = ClientInput.toUpperCase();
 					socketOut.writeUTF(ServerOutput);
-					}while(!ServerOutput.equals("X"));
-					
-					//close all steam and channel
-					socketIn.close();
-					socketOut.close();
-					socketChannel.close();
-					serverSocketChannel.close();
-				
+				} while (!ServerOutput.equals("X"));
+
+				// close all steam and channel
+				socketIn.close();
+				socketOut.close();
+				socketChannel.close();
+				serverSocketChannel.close();
+
 			}
 
 		} catch (IOException e) {
@@ -79,6 +80,5 @@ public class Lab11Task1Server {
 
 }
 
-// info = socketIn.readUTF();
-// System.out.println("server:" + resultNumber);
+
 

@@ -1,81 +1,64 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
+import java.util.Iterator;
+import java.util.Set;
 
 public class Lab11Task2Server {
-	private static final int port = 8888;
-    private final static String host = "localhost";
+  private static final int PORT_NUMBER = 8888;
+  private static final int BUFFER_SIZE = 256;
 
-	public static void main(String[] args) throws Exception {
+  public static void main(String[] args) throws IOException {
+    ServerSocketChannel server = ServerSocketChannel.open();
+    server.socket().bind(new InetSocketAddress(PORT_NUMBER));
+    server.socket().setReuseAddress(true);
+    server.configureBlocking(false);
 
-		try {
+    Selector selector = Selector.open();
+    server.register(selector, SelectionKey.OP_ACCEPT);
 
-			InetSocketAddress server = new InetSocketAddress(host,port);
-			ServerSocketChannel serverSocketChannel = ServerSocketChannel
-					.open();
-			serverSocketChannel.socket().bind(server);
-			serverSocketChannel.configureBlocking(false);
+    ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
+    String upper;
+    while (true) {
+      int channelCount = selector.select();
+      if (channelCount > 0) {
+        Set<SelectionKey> keys = selector.selectedKeys();
+        Iterator<SelectionKey> iterator = keys.iterator();
+        while (iterator.hasNext()) {
+          SelectionKey key = iterator.next();
+          iterator.remove();
 
-			System.out.println("server/"
-					+ server.getAddress());
+          if (key.isAcceptable()) {
+            SocketChannel client = server.accept();
+            System.out.println(client.getLocalAddress());
+            client.configureBlocking(false);
+            client.register(selector, SelectionKey.OP_READ, client.socket().getPort());
+          } else if (key.isReadable()) {
+            SocketChannel client = (SocketChannel) key.channel();
+            p("port: " + key.attachment());
+            if (client.read(buffer) < 0) {
+              key.cancel();
+              client.close();
+            } else {
+              buffer.flip(); // read from the buffer
+              upper = buffer.toString().toUpperCase();
+              System.out.println(upper);
+              ByteBuffer outbuffer = ByteBuffer.wrap(upper.getBytes());
+              outbuffer.flip();
+              client.write(outbuffer);
+              buffer.clear(); // write into the buffer            
+              }
+          }
+        }
+      }
+    }
+  }
 
-			// connect
-			System.out.println("server start, waiting");
-
-			String ClientInput;
-			String ServerOutput;
-
-			while (true) {
-				SocketChannel socketChannel = serverSocketChannel.accept();
-			    if(socketChannel != null){
-					System.out.println("client/"
-							+ socketChannel.socket().getLocalAddress());
-					// output steam
-					DataOutputStream socketOut = new DataOutputStream(
-							socketChannel.socket().getOutputStream());
-					// input steam
-					DataInputStream socketIn = new DataInputStream(
-							socketChannel.socket().getInputStream());
-					// read from keyboard
-					BufferedReader br = new BufferedReader(
-							new InputStreamReader(System.in));
-					do{
-					ClientInput = socketIn.readUTF();
-					System.out.println(ClientInput);
-					ServerOutput = ClientInput.toUpperCase();
-					socketOut.writeUTF(ServerOutput);
-					}while(!ServerOutput.equals("X"));
-					
-					//close all steam and channel
-					socketIn.close();
-					socketOut.close();
-					socketChannel.close();
-					serverSocketChannel.close();
-				}
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("sth error");
-		}
-	}
-
+  private static void p(String s) {
+    System.out.println(s);
+  }
 }
-
-// info = socketIn.readUTF();
-// System.out.println("server:" + resultNumber);
-
